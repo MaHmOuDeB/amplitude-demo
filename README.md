@@ -1,5 +1,7 @@
 # Pulse — Analytics Dashboard Demo
 
+**[Live demo →](https://amplitude-demo-black.vercel.app)**
+
 A small SaaS-style analytics dashboard built to demonstrate practical **Amplitude Analytics** instrumentation: a deliberate event taxonomy, autocapture, and Session Replay wired into a realistic React app.
 
 ![stack](https://img.shields.io/badge/react-18-61dafb) ![stack](https://img.shields.io/badge/typescript-5-3178c6) ![stack](https://img.shields.io/badge/vite-5-646cff) ![stack](https://img.shields.io/badge/amplitude-unified-6366f1)
