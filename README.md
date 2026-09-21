@@ -7,23 +7,30 @@ A small SaaS-style analytics dashboard built to demonstrate practical **Amplitud
 ## What this demonstrates
 
 - **Deliberate event taxonomy** — not just "install the SDK and call it done." Every meaningful user action in the dashboard is instrumented with a purposeful event name and properties (see table below).
+- **User identification** — `setUserId` + `Identify` (`role`, `plan`, `company_size`, `signup_date`) ties events to a user instead of leaving them anonymous, so they can actually be segmented and cohorted on.
 - **Autocapture + Session Replay** alongside explicit tracking, so generic interactions are covered without duplicating effort in custom events.
 - **A single init point** — `amplitude.initAll()` is called exactly once, at app startup, via [`src/lib/analytics.ts`](src/lib/analytics.ts).
 - **Environment-aware config** — the API key is read from `VITE_AMPLITUDE_API_KEY` (Vite's public env prefix) with a loud console warning if it's missing, rather than failing silently.
 
 ## Event taxonomy
 
-| Event | Fired when | Key properties |
-|---|---|---|
-| `Viewed Dashboard` | App loads | `prompt_version` |
-| `Applied Filter` | Channel filter changed | `filter_type`, `value` |
-| `Changed Date Range` | 7d / 30d / 90d toggle changed | `range` |
-| `Viewed Chart Detail` | "Detail" clicked on a chart | `chart` |
-| `Exported Report` | "Export CSV" clicked | `format` |
-| `Saved View` | A filter combination is saved | `view_name` |
-| `Loaded Saved View` | A saved view is selected | `view_name` |
+Every event is chosen to answer a specific product question, not just to log that a click happened.
+
+| Event | Fired when | Key properties | Answers |
+|---|---|---|---|
+| `Viewed Dashboard` | App loads | `prompt_version` | Activation — did the user reach the core screen this session? |
+| `Applied Filter` | Channel filter changed | `filter_type`, `value` | Which segments do users actually care about slicing by? |
+| `Changed Date Range` | 7d / 30d / 90d toggle changed | `range` | Do users default to recent data or trend-watch over longer windows? |
+| `Viewed Chart Detail` | "Detail" clicked on a chart | `chart` | Feature engagement — which chart drives deeper investigation? |
+| `Exported Report` | "Export CSV" clicked | `format` | Conversion to an outside-the-product action — a strong intent signal. |
+| `Saved View` | A filter combination is saved | `view_name` | Retention driver — saving a view predicts the user will come back. |
+| `Loaded Saved View` | A saved view is selected | `view_name` | Confirms saved views are actually reused, not just created once. |
 
 All tracking calls live in [`src/lib/analytics.ts`](src/lib/analytics.ts) — one place to see the entire taxonomy at a glance.
+
+### User identity
+
+`identifyDemoUser()` calls `setUserId` and sends an `Identify` with `role`, `plan`, `company_size`, and `signup_date` (`setOnce`, since it shouldn't change after the first identify call). Real deployments would call this right after login with the actual authenticated user's data — here it runs at startup against a fixed demo user, since the app has no auth. Without it, every event in the taxonomy above is anonymous and can't be broken down by "which plan tier saves views the most?" or similar.
 
 ## Stack
 

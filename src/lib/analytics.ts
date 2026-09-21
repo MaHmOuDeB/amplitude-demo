@@ -2,6 +2,15 @@ import * as amplitude from '@amplitude/unified';
 
 const AMPLITUDE_API_KEY = import.meta.env.VITE_AMPLITUDE_API_KEY;
 
+// Stand-in for a real logged-in user, since this demo has no auth/backend.
+const DEMO_USER = {
+  userId: 'demo-user-1024',
+  role: 'Growth Analyst',
+  plan: 'Team',
+  companySize: '51-200',
+  signupDate: '2026-01-14',
+};
+
 export function initAnalytics(): void {
   if (!AMPLITUDE_API_KEY) {
     console.warn('Amplitude API key missing — analytics disabled');
@@ -12,6 +21,21 @@ export function initAnalytics(): void {
     analytics: { autocapture: true },
     sessionReplay: { sampleRate: 1 },
   });
+}
+
+// Ties events to a user and sets the properties Amplitude segments/cohorts on
+// (plan, role, company size) — without this, events are anonymous and can't
+// answer questions like "which plan tier uses saved views the most?"
+export function identifyDemoUser(): void {
+  amplitude.setUserId(DEMO_USER.userId);
+
+  const identifyEvent = new amplitude.Identify()
+    .set('role', DEMO_USER.role)
+    .set('plan', DEMO_USER.plan)
+    .set('company_size', DEMO_USER.companySize)
+    .setOnce('signup_date', DEMO_USER.signupDate);
+
+  amplitude.identify(identifyEvent);
 }
 
 // Fired once, at dashboard load — the setup-verification event.

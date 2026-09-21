@@ -1,10 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
-import { initAnalytics, trackViewedDashboard } from './lib/analytics';
+import { identifyDemoUser, initAnalytics, trackViewedDashboard } from './lib/analytics';
 import './index.css';
 
 initAnalytics();
+identifyDemoUser();
 trackViewedDashboard();
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
